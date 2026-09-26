@@ -26,7 +26,7 @@
       "transition": 0
     },
     {
-      "time": 43.5,
+      "time": 29,
       "effect": "procedural",
       "generator": "mandelbrot",
       "seed": 219,
@@ -47,7 +47,7 @@
       "transition": 0
     },
     {
-      "time": 87,
+      "time": 58,
       "effect": "procedural",
       "generator": "mandelbrot",
       "seed": 219,
@@ -74,7 +74,7 @@
       "transition": 0
     },
     {
-      "time": 130.5,
+      "time": 87,
       "effect": "procedural",
       "generator": "mandelbrot",
       "seed": 219,
@@ -96,7 +96,59 @@
       "orbit": {
         "radius": 9e-10,
         "from": 0,
-        "to": 120
+        "to": 180
+      }
+    },
+    {
+      "time": 116,
+      "effect": "procedural",
+      "generator": "mandelbrot",
+      "seed": 219,
+      "palette": "neon",
+      "center": [
+        -0.743643887037151,
+        0.13182590420533
+      ],
+      "zoom": {
+        "from": 3.2e-9,
+        "to": 3.2e-9
+      },
+      "iterations": {
+        "from": 3000,
+        "to": 3000
+      },
+      "quality": 192,
+      "transition": 0,
+      "orbit": {
+        "radius": 9e-10,
+        "from": 180,
+        "to": 360
+      }
+    },
+    {
+      "time": 145,
+      "effect": "procedural",
+      "generator": "mandelbrot",
+      "seed": 219,
+      "palette": "neon",
+      "center": [
+        -0.743643887037151,
+        0.13182590420533
+      ],
+      "zoom": {
+        "from": 3.2e-9,
+        "to": 3.2e-9
+      },
+      "iterations": {
+        "from": 3000,
+        "to": 3000
+      },
+      "quality": 192,
+      "transition": 0,
+      "orbit": {
+        "radius": 9e-10,
+        "from": 360,
+        "to": 540
       }
     },
     {
@@ -105,28 +157,29 @@
       "generator": "mandelbrot",
       "seed": 219,
       "palette": "neon",
-      "center": [
-        -0.743643887037151,
-        0.13182590420533
-      ],
+      "center": {
+        "from": [
+          -0.743643887937151,
+          0.13182590420533
+        ],
+        "to": [
+          -0.743643887037151,
+          0.13182590420533
+        ]
+      },
       "zoom": {
         "from": 3.2e-9,
-        "to": 3.2e-9
+        "to": 0.0000032
       },
       "iterations": {
         "from": 3000,
-        "to": 3000
+        "to": 1500
       },
       "quality": 192,
-      "transition": 0,
-      "orbit": {
-        "radius": 9e-10,
-        "from": 120,
-        "to": 240
-      }
+      "transition": 0
     },
     {
-      "time": 217.5,
+      "time": 203,
       "effect": "procedural",
       "generator": "mandelbrot",
       "seed": 219,
@@ -136,20 +189,36 @@
         0.13182590420533
       ],
       "zoom": {
-        "from": 3.2e-9,
-        "to": 3.2e-9
+        "from": 0.0000032,
+        "to": 0.0032
       },
       "iterations": {
-        "from": 3000,
-        "to": 3000
+        "from": 1500,
+        "to": 600
       },
-      "quality": 192,
-      "transition": 0,
-      "orbit": {
-        "radius": 9e-10,
-        "from": 240,
-        "to": 360
-      }
+      "quality": 224,
+      "transition": 0
+    },
+    {
+      "time": 232,
+      "effect": "procedural",
+      "generator": "mandelbrot",
+      "seed": 219,
+      "palette": "neon",
+      "center": [
+        -0.743643887037151,
+        0.13182590420533
+      ],
+      "zoom": {
+        "from": 0.0032,
+        "to": 3.2
+      },
+      "iterations": {
+        "from": 600,
+        "to": 120
+      },
+      "quality": 256,
+      "transition": 0
     }
   ]
 }
