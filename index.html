@@ -24,7 +24,7 @@
   <canvas id="stage" width="800" height="800" aria-label="Mandelbrot animation"></canvas>
   <button id="play" disabled>Loading track…</button>
   <p id="status" role="status" aria-live="polite"></p>
-  <small id="build-id">Mandelbrot demo r4 · 2026-09-26</small>
+  <small id="build-id">Mandelbrot demo r5 · 2026-09-27</small>
   <div class="soundcloud"><iframe id="sc" title="SoundCloud audio player" allow="autoplay" src="about:blank"></iframe></div>
 </main>
 <script src="https://w.soundcloud.com/player/api.js"></script>
@@ -57,6 +57,9 @@ function cameraAt(t) {
 function compute(p) {
   const {width:w,cx,cy,span,iterations:max,palette:colors,seed}=p;
   const pixels=new Uint8ClampedArray(w*w*4),unit=span/w,phase=(seed%997)*.001;
+  // Saturated hue bands gradually replace RGB blends as the camera dives.
+  const depth=clamp(Math.log10(3.2/span)/9,0,1),colorMix=clamp((depth-.22)/.62,0,1);
+  const hueStops=[.91,.53,.20,.07];
   for(let y=0;y<w;y++)for(let x=0;x<w;x++){
     const cr=cx+(x+.5-w/2)*unit,ci=cy-(y+.5-w/2)*unit;
     const xr=cr-.25,q=xr*xr+ci*ci,inside=q*(q+xr)<=.25*ci*ci||(cr+1)*(cr+1)+ci*ci<=.0625;
@@ -75,6 +78,24 @@ function compute(p) {
       let r=a[0]*(1-f)+b[0]*f,g=a[1]*(1-f)+b[1]*f,bl=a[2]*(1-f)+b[2]*f;
       const mid=(Math.max(r,g,bl)+Math.min(r,g,bl))/2-18*.9,boost=1+1.8*.9;
       r=clamp(mid+(r-mid)*boost,0,255);g=clamp(mid+(g-mid)*boost,0,255);bl=clamp(mid+(bl-mid)*boost,0,255);
+      if(colorMix){
+        const first=hueStops[((base%4)+4)%4],last=hueStops[(((base+1)%4)+4)%4];
+        const hue=(first+(((last-first+1.5)%1)-.5)*f+1)%1;
+        const wheel=hue*6,sector=Math.floor(wheel),part=wheel-sector;
+        const value=.72+.28*(.5+.5*Math.cos(smooth*.18)),low=value*.03;
+        const falling=value*(1-.97*part),rising=value*(.03+.97*part);
+        const bright=value*255,dim=low*255,fall=falling*255,rise=rising*255;
+        let rr,gg,bb;
+        switch(sector%6){
+          case 0: rr=bright;gg=rise;bb=dim;break;
+          case 1: rr=fall;gg=bright;bb=dim;break;
+          case 2: rr=dim;gg=bright;bb=rise;break;
+          case 3: rr=dim;gg=fall;bb=bright;break;
+          case 4: rr=rise;gg=dim;bb=bright;break;
+          default: rr=bright;gg=dim;bb=fall;
+        }
+        r+=colorMix*(rr-r);g+=colorMix*(gg-g);bl+=colorMix*(bb-bl);
+      }
       pixels[k]=shade*r;pixels[k+1]=shade*g;pixels[k+2]=shade*bl;
     }
     pixels[k+3]=255;
