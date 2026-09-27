@@ -29,7 +29,7 @@
   <button id="play" disabled>Loading track…</button>
   <p id="status" role="status" aria-live="polite"></p>
   <section id="track-test" hidden><label for="embed-code">Private SoundCloud embed code</label><textarea id="embed-code" placeholder="Paste the iframe code from SoundCloud Share → Embed"></textarea><button id="load-track" type="button">Load test track</button></section>
-  <small id="build-id">Mandelbrot demo r13 · 2026-09-27</small>
+  <small id="build-id">Mandelbrot demo r14 · 2026-09-27</small>
   <div class="soundcloud"><iframe id="sc" title="SoundCloud audio player" allow="autoplay" src="about:blank"></iframe></div>
 </main>
 <script src="https://w.soundcloud.com/player/api.js"></script>
@@ -43,7 +43,7 @@ const testPanel=document.getElementById('track-test'),embedCode=document.getElem
 const palette=['#ff63bd','#70e8ff','#e5ff79','#ffa35d'].map(hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)));
 const renderCanvas=document.createElement('canvas'),renderContext=renderCanvas.getContext('2d');
 const nominalDuration=recipe.duration,baseTimes=recipe.segments.map(s=>s.time);
-let widget=null,widgetReady=false,playing=false,starting=false,gestureStarted=false,ended=false;
+let widget=null,widgetReady=false,playing=false,starting=false,gestureStarted=false,ended=false,resumeRequested=false;
 let position=0,anchor=0,anchorTime=performance.now(),lastPoll=0,lastProbe=null,probeTimer=null,probeStarted=0,rendered=null,busy=false,sent=null,lastRequest=-Infinity,worker=null;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function cameraAt(t) {
@@ -153,21 +153,25 @@ function activate(ms){
   anchor=position;anchorTime=performance.now();status.textContent='';setPlaying(true);draw(position);
 }
 function observe(ms){
-  if(!starting||!Number.isFinite(ms)||ms<0)return;
-  if(ms>100||lastProbe!==null&&ms-lastProbe>=60){activate(ms);return}
-  lastProbe=ms;
+  if((!starting&&!(resumeRequested&&!playing))||!Number.isFinite(ms)||ms<0)return;
+  // A paused track can already be far from zero; only new movement proves playback resumed.
+  if(lastProbe!==null&&ms-lastProbe>=60){
+    if(!starting)starting=true;
+    activate(ms);return;
+  }
+  if(lastProbe===null||ms<lastProbe)lastProbe=ms;
 }
 function requestStart(){
   if(!widgetReady||starting)return;
   if(ended){widget.seekTo(0);position=0;ended=false}
-  starting=true;status.textContent='';probeStarted=performance.now();
+  starting=true;resumeRequested=true;status.textContent='';probeStarted=performance.now();
   playButton.textContent='Starting…';
   let retries=0;
   probeTimer=setInterval(()=>{
     if(!starting||!widgetReady){stopProbe();return}
     widget.getPosition(observe);
     if(/iPhone|iPod/.test(navigator.userAgent)&&performance.now()-probeStarted>900*(retries+1)&&retries<3){retries++;widget.play()}
-    if(performance.now()-probeStarted>5000){starting=false;stopProbe();setPlaying(false);status.textContent='SoundCloud did not start. Tap Play again.'}
+    if(performance.now()-probeStarted>5000){starting=false;resumeRequested=false;stopProbe();setPlaying(false);status.textContent='SoundCloud did not start. Tap Play again.'}
   },180);
   widget.play();
 }
@@ -179,7 +183,7 @@ playButton.addEventListener('pointerdown',e=>{
 playButton.addEventListener('click',()=>{
   if(gestureStarted){gestureStarted=false;if(widgetReady&&!playing)widget.play();return}
   if(!widgetReady)return;
-  if(playing){widget.pause();return}
+  if(playing){resumeRequested=false;position=clock();setPlaying(false);draw(position);widget.pause();return}
   requestStart();
 });
 if(new URLSearchParams(location.search).has('testAudio'))testPanel.hidden=false;
@@ -194,13 +198,13 @@ loadTrack.addEventListener('click',()=>{
     if(target.protocol!=='https:'||target.hostname!=='api.soundcloud.com'||!/^\/tracks\//.test(target.pathname))throw Error('track');
   }catch(_){status.textContent='Paste the full iframe code from SoundCloud Share → Embed.';return}
   if(!widget){status.textContent='SoundCloud player is still loading.';return}
-  starting=false;stopProbe();playing=false;widgetReady=false;ended=false;position=0;anchor=0;
+  starting=false;resumeRequested=false;stopProbe();playing=false;widgetReady=false;ended=false;position=0;anchor=0;
   playButton.disabled=true;playButton.textContent='Loading track…';status.textContent='';
   embedCode.value='';
   widget.load(target.href,{auto_play:false,visual:false,show_comments:false,show_reposts:false,callback:audioReady});
 });
 function audioReady(){
-  widgetReady=true;setPlaying(false);status.textContent='';
+  widgetReady=true;resumeRequested=false;setPlaying(false);status.textContent='';
   widget.getDuration(ms=>{if(Number.isFinite(ms)&&ms>0){recipe.duration=ms/1000;recipe.segments.forEach((s,i)=>s.time=baseTimes[i]*recipe.duration/nominalDuration);draw(position)}});
 }
 function initAudio(){
@@ -211,10 +215,10 @@ function initAudio(){
   widget.bind(SC.Widget.Events.PLAY_PROGRESS,e=>observe(e?.currentPosition));
   widget.bind(SC.Widget.Events.PAUSE,()=>{
     if(starting&&!playing)return;
-    if(playing){position=clock();setPlaying(false);draw(position)}
+    if(playing){position=clock();setPlaying(false);draw(position);lastProbe=null}
   });
-  widget.bind(SC.Widget.Events.FINISH,()=>{starting=false;stopProbe();position=recipe.duration;ended=true;setPlaying(false);draw(position)});
-  widget.bind(SC.Widget.Events.ERROR,()=>{starting=false;stopProbe();widgetReady=false;playButton.textContent='Track unavailable';playButton.disabled=true;status.textContent='SoundCloud could not play this track.'});
+  widget.bind(SC.Widget.Events.FINISH,()=>{starting=false;resumeRequested=false;stopProbe();position=recipe.duration;ended=true;setPlaying(false);draw(position)});
+  widget.bind(SC.Widget.Events.ERROR,()=>{starting=false;resumeRequested=false;stopProbe();widgetReady=false;playButton.textContent='Track unavailable';playButton.disabled=true;status.textContent='SoundCloud could not play this track.'});
 }
 function frame(now){
   if(playing){
