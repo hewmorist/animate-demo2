@@ -43,7 +43,7 @@ const recipe={"version":1,"title":"Mandelbrot — inward journey","duration":261
 const C=document.getElementById('stage'),ctx=C.getContext('2d');
 const playButton=document.getElementById('play'),status=document.getElementById('status'),sc=document.getElementById('sc');
 const testPanel=document.getElementById('track-test'),embedCode=document.getElementById('embed-code'),loadTrack=document.getElementById('load-track');
-const iphone=/iPhone|iPod/.test(navigator.userAgent);
+const iphone=/iPhone|iPod/.test(navigator.userAgent)||new URLSearchParams(location.search).has('iosPreview');
 const palette=['#ff63bd','#70e8ff','#e5ff79','#ffa35d'].map(hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)));
 const renderCanvas=document.createElement('canvas'),renderContext=renderCanvas.getContext('2d');
 const nominalDuration=recipe.duration,baseTimes=recipe.segments.map(s=>s.time);
