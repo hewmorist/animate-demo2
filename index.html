@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Mandelbrot — Inward Journey</title>
+  <title>Planet Mandelbrot</title>
+  <meta name="app-revision" content="animate-demo2 player2 r1">
   <style>
     :root { color-scheme: dark; font-family: system-ui,-apple-system,Segoe UI,sans-serif; background: #090b13; color: #f6f0e6 }
     * { box-sizing: border-box }
     body { margin: 0; min-height: 100vh }
-    main { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 18px 18px 40px }
-    canvas { display: block; width: min(92vw,72vh,880px); aspect-ratio: 1; border-radius: 14px; background: #171923; box-shadow: 0 18px 75px #000a }
+    main { min-height: 100svh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: max(18px, calc((100svh - min(92vw,65svh,880px) - 110px)/2)) 18px 40px }
+    canvas { display: block; width: min(92vw,65svh,880px); aspect-ratio: 1; flex: none; border-radius: 14px; background: #171923; box-shadow: 0 18px 75px #000a }
     button { margin-top: 24px; min-width: 160px; padding: .8rem 1.35rem; font: 700 1.1rem system-ui,-apple-system,Segoe UI,sans-serif; color: #15171c; background: #f0dcc1; border: 0; border-radius: 13px; cursor: pointer }
     button:disabled { opacity: .6; cursor: wait }
+    #transport { display: flex; align-items: center; gap: 12px; width: min(92vw,65svh,880px); margin-top: 16px }
+    #timeline { flex: 1; min-width: 0; height: 24px; accent-color: #70e8ff; touch-action: none }
+    #time-label { min-width: 6.5em; text-align: right; color: #b7c1d4; font-size: .8rem; font-variant-numeric: tabular-nums; white-space: nowrap }
     #status { position: fixed; left: 12px; right: 12px; bottom: 28px; margin: 0; text-align: center; font-size: .85rem; color: #ffc0aa }
     #status:empty { display: none }
-    #track-test { width: min(92vw,600px); margin-top: 18px; text-align: center }
-    #track-test[hidden] { display: none }
-    #track-test textarea { display: block; width: 100%; height: 76px; margin-top: 8px; padding: 8px; background: #181c28; color: #fff; border: 1px solid #697185; border-radius: 8px }
-    #track-test button { margin-top: 8px; font-size: .95rem }
     #build-id { position: fixed; right: 12px; bottom: 8px; color: #8d94a5; font-size: 11px; letter-spacing: .02em }
     .soundcloud { position: absolute; left: -10000px; width: 300px; height: 166px; overflow: hidden }
     #sc { width: 300px; height: 166px; border: 0 }
@@ -26,25 +26,49 @@
 <body>
 <main>
   <canvas id="stage" width="800" height="800" aria-label="Mandelbrot animation"></canvas>
+  <div id="transport"><input id="timeline" type="range" min="0" max="261" step="0.01" value="0" aria-label="Track position"><span id="time-label">0:00 / 4:21</span></div>
   <button id="play" disabled>Loading track…</button>
   <p id="status" role="status" aria-live="polite"></p>
-  <section id="track-test" hidden><label for="embed-code">Private SoundCloud embed code</label><textarea id="embed-code" placeholder="Paste the iframe code from SoundCloud Share → Embed"></textarea><button id="load-track" type="button">Load test track</button></section>
-  <small id="build-id">Mandelbrot demo r15 · 2026-09-27</small>
+  <small id="build-id">Mandelbrot demo player2 r1 · 2026-09-27</small>
   <div class="soundcloud"><iframe id="sc" title="SoundCloud audio player" allow="autoplay" src="about:blank"></iframe></div>
 </main>
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
 'use strict';
 // Embedded from mandelbrot-demo.json; the standalone page requires no fetch.
-const recipe={"version":1,"title":"Mandelbrot — inward journey","duration":261,"soundcloud":"https://soundcloud.com/hewmorist/mandelbrot-techno","segments":[{"time":0,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2,"to":0.0032},"iterations":{"from":120,"to":600},"quality":384,"transition":0},{"time":29,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":0.0032,"to":0.0000032},"iterations":{"from":600,"to":1500},"quality":352,"transition":0},{"time":58,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":{"from":[-0.743643887037151,0.13182590420533],"to":[-0.743643885837151,0.13182590420533]},"zoom":{"from":0.0000032,"to":3.2e-9},"iterations":{"from":1500,"to":3000},"quality":320,"transition":0},{"time":87,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"from":0,"to":600}},{"time":116,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"from":600,"to":1200}},{"time":145,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"from":1200,"to":1800}},{"time":174,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":{"from":[-0.743643885837151,0.13182590420533],"to":[-0.743643887037151,0.13182590420533]},"zoom":{"from":3.2e-9,"to":0.0000032},"iterations":{"from":3000,"to":1500},"quality":320,"transition":0},{"time":203,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":0.0000032,"to":0.0032},"iterations":{"from":1500,"to":600},"quality":352,"transition":0},{"time":232,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":0.0032,"to":3.2},"iterations":{"from":600,"to":120},"quality":384,"transition":0}]};
+const recipe={"version":1,"title":"Mandelbrot — inward journey","duration":261,"soundcloud":"https://soundcloud.com/hewmorist/mandelbrot-techno","segments":[{"time":0,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2,"to":0.0032},"iterations":{"from":120,"to":600},"quality":384,"transition":0,"orbit":{"relativeRadius":0.375,"from":0,"to":720,"fadeIn":true}},{"time":40.6,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":0.0032,"to":0.0000032},"iterations":{"from":600,"to":1500},"quality":352,"transition":0,"orbit":{"relativeRadius":0.375,"from":720,"to":1440}},{"time":81.2,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":0.0000032,"to":3.2e-9},"iterations":{"from":1500,"to":3000},"quality":320,"transition":0,"orbit":{"relativeRadius":0.375,"from":1440,"to":2160}},{"time":121.8,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"bulge":1.2e-9,"progressFrom":0,"progressTo":0.16666666666666666,"from":0,"to":60}},{"time":124.7,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"bulge":1.2e-9,"progressFrom":0.16666666666666666,"progressTo":0.3333333333333333,"from":60,"to":120}},{"time":127.6,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"bulge":1.2e-9,"progressFrom":0.3333333333333333,"progressTo":0.5,"from":120,"to":180}},{"time":130.5,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"bulge":1.2e-9,"progressFrom":0.5,"progressTo":0.6666666666666666,"from":180,"to":240}},{"time":133.4,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"bulge":1.2e-9,"progressFrom":0.6666666666666666,"progressTo":0.8333333333333334,"from":240,"to":300}},{"time":136.3,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":3.2e-9},"iterations":{"from":3000,"to":3000},"quality":320,"transition":0,"orbit":{"radius":1.2e-9,"bulge":1.2e-9,"progressFrom":0.8333333333333334,"progressTo":1,"from":300,"to":360}},{"time":139.2,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":3.2e-9,"to":0.0000032},"iterations":{"from":3000,"to":1500},"quality":320,"transition":0,"orbit":{"relativeRadius":0.375,"from":1800,"to":2520}},{"time":179.79999999999998,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":0.0000032,"to":0.0032},"iterations":{"from":1500,"to":600},"quality":352,"transition":0,"orbit":{"relativeRadius":0.375,"from":2520,"to":3240}},{"time":220.39999999999998,"effect":"procedural","generator":"mandelbrot","seed":219,"palette":"neon","center":[-0.743643887037151,0.13182590420533],"zoom":{"from":0.0032,"to":3.2},"iterations":{"from":600,"to":120},"quality":384,"transition":0,"orbit":{"relativeRadius":0.375,"from":3240,"to":3960,"fadeOut":true}}]};
+const options=new URLSearchParams(location.search);
+const frameMode=options.get('frames')||'precache';
+const shortBlend=frameMode==='blend';
+const cacheFrames=frameMode==='precache';
+const motionFrames=frameMode==='motion'||cacheFrames;
+const completeFrames=frameMode==='complete'||shortBlend||motionFrames;
+if(options.get('path')==='straight'){
+  recipe.segments.forEach(segment=>delete segment.orbit);
+  document.title='Planet Mandelbrot — straight path test';
+}
+if(completeFrames&&!cacheFrames)document.title=motionFrames?'Planet Mandelbrot — interpolated motion test':shortBlend?'Planet Mandelbrot — finished-frame blend test':'Planet Mandelbrot — complete frames test';
 const C=document.getElementById('stage'),ctx=C.getContext('2d');
+const timeline=document.getElementById('timeline');
+const timeLabel=document.getElementById('time-label');
 const playButton=document.getElementById('play'),status=document.getElementById('status'),sc=document.getElementById('sc');
-const testPanel=document.getElementById('track-test'),embedCode=document.getElementById('embed-code'),loadTrack=document.getElementById('load-track');
 const palette=['#ff63bd','#70e8ff','#e5ff79','#ffa35d'].map(hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)));
 const renderCanvas=document.createElement('canvas'),renderContext=renderCanvas.getContext('2d');
+const previousCanvas=document.createElement('canvas'),previousContext=previousCanvas.getContext('2d');
+const cacheCanvasA=document.createElement('canvas'),cacheContextA=cacheCanvasA.getContext('2d');
+const cacheCanvasB=document.createElement('canvas'),cacheContextB=cacheCanvasB.getContext('2d');
+const edgeCanvas=document.createElement('canvas');edgeCanvas.width=800;edgeCanvas.height=800;
+const edgeContext=edgeCanvas.getContext('2d');
+const edgeFillCanvas=document.createElement('canvas'),edgeFillContext=edgeFillCanvas.getContext('2d');
 const nominalDuration=recipe.duration,baseTimes=recipe.segments.map(s=>s.time);
+let scrubbing=false;
 let widget=null,widgetReady=false,playing=false,starting=false,gestureStarted=false,ended=false,resumeRequested=false;
-let position=0,anchor=0,anchorTime=performance.now(),lastPoll=0,lastProbe=null,probeTimer=null,probeStarted=0,rendered=null,busy=false,sent=null,lastRequest=-Infinity,worker=null;
+let position=0,anchor=0,anchorTime=performance.now(),lastPoll=0,lastProbe=null,probeTimer=null,probeStarted=0,rendered=null,previous=null,previousView=null,displayedComplete=null,blendAt=0,motionBlendMs=120,busy=false,lastRequest=-Infinity,worker=null;
+let edgeWorker=null,edgeBusy=false,edgeRendered=null,edgeRequested=null,lastEdgeRequest=-Infinity,edgeEpoch=0;
+let cacheWorker=null,cacheNext=0,cacheDone=0,cacheStarted=false,cacheCanvasIndexA=-1,cacheCanvasIndexB=-1;
+const cached=new Map(),cacheFirst=118,cacheLast=211;
+const cacheTimes=[...Array.from({length:cacheLast-cacheFirst+1},(_,i)=>cacheFirst+i),
+  ...Array.from({length:11},(_,i)=>125.5+i)].sort((a,b)=>a-b);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function cameraAt(t) {
   let index=0;for(let i=1;i<recipe.segments.length;i++)if(t>=recipe.segments[i].time)index=i;
@@ -55,19 +79,32 @@ function cameraAt(t) {
   let cx=start[0]+(finish[0]-start[0])*f,cy=start[1]+(finish[1]-start[1])*f;
   if(s.orbit){
     const angle=(s.orbit.from+(s.orbit.to-s.orbit.from)*f)*Math.PI/180;
-    cx+=s.orbit.radius*Math.cos(angle);cy+=s.orbit.radius*Math.sin(angle);
+    const radius=s.orbit.relativeRadius!==undefined
+      ?s.orbit.relativeRadius*s.zoom.from*Math.pow(s.zoom.to/s.zoom.from,f)*(s.orbit.fadeIn?f*f*(3-2*f):s.orbit.fadeOut?1-f*f*(3-2*f):1)
+      :s.orbit.bulge!==undefined
+        ?s.orbit.radius+s.orbit.bulge*Math.sin(Math.PI*(s.orbit.progressFrom+(s.orbit.progressTo-s.orbit.progressFrom)*f))**2
+        :s.orbit.radiusFrom!==undefined
+          ?s.orbit.radiusFrom+(s.orbit.radiusTo-s.orbit.radiusFrom)*f*f*(3-2*f)
+          :s.orbit.radius;
+    cx+=radius*Math.cos(angle);cy+=radius*Math.sin(angle);
   }
   return {cx,cy,span:s.zoom.from*Math.pow(s.zoom.to/s.zoom.from,f),
     iterations:Math.round(s.iterations.from+(s.iterations.to-s.iterations.from)*f),width:s.quality,seed:s.seed};
 }
 function compute(p) {
-  const {width:w,cx,cy,span,iterations:max,palette:colors,seed}=p;
+  const {width:w,cx,cy,span,iterations:max,palette:colors,seed,edgeOutside}=p;
   const pixels=new Uint8ClampedArray(w*w*4),unit=span/w,phase=(seed%997)*.001;
   // Saturated hue bands gradually replace RGB blends as the camera dives.
   const depth=clamp(Math.log10(3.2/span)/9,0,1),colorMix=clamp((depth-.22)/.62,0,1);
   const hueStops=[.91,.53,.20,.07];
   for(let y=0;y<w;y++)for(let x=0;x<w;x++){
     const cr=cx+(x+.5-w/2)*unit,ci=cy-(y+.5-w/2)*unit;
+    // Transparent where the newest complete render already provides pixels.
+    // Every opaque edge pixel is calculated from the fractal equation.
+    // Calculate beneath the join as well, so feathering cannot reveal the
+    // dark canvas between a complete frame and its calculated edge ring.
+    if(edgeOutside&&Math.abs(cr-edgeOutside.cx)<edgeOutside.span/2-16*unit&&
+       Math.abs(ci-edgeOutside.cy)<edgeOutside.span/2-16*unit)continue;
     const xr=cr-.25,q=xr*xr+ci*ci,inside=q*(q+xr)<=.25*ci*ci||(cr+1)*(cr+1)+ci*ci<=.0625;
     let zr=0,zi=0,n=0,mag=0;
     if(!inside)for(;n<max;n++){
@@ -109,40 +146,265 @@ function compute(p) {
   return pixels;
 }
 function finish(p,pixels) {
+  const inCache=cacheFrames&&position*nominalDuration/recipe.duration>=cacheFirst&&
+    position*nominalDuration/recipe.duration<=cacheLast;
+  if(rendered&&(!completeFrames||shortBlend||motionFrames)&&!inCache){
+    if(motionFrames){
+      previousView=motionView(rendered,cameraAt(position));
+      const nextView=motionView(p,cameraAt(position));
+      const distance=Math.hypot(nextView.cx-previousView.cx,nextView.cy-previousView.cy)/nextView.span;
+      const scale=Math.abs(Math.log(nextView.span/previousView.span));
+      // Fast turns at depth can travel farther than the guard band while a
+      // frame is calculating. Spread that handoff over several display ticks.
+      const turn=position>110&&position<195;
+      motionBlendMs=130+Math.min(turn?430:170,850*(distance+scale*.45));
+    }
+    previousCanvas.width=renderCanvas.width;previousCanvas.height=renderCanvas.height;
+    previousContext.drawImage(renderCanvas,0,0);previous=rendered;blendAt=performance.now();
+  }
   renderCanvas.width=p.width;renderCanvas.height=p.width;
   const image=renderContext.createImageData(p.width,p.width);image.data.set(pixels);
-  renderContext.putImageData(image,0,0);rendered=p;busy=false;draw(position);
+  renderContext.putImageData(image,0,0);
+  rendered=p;busy=false;draw(position);
 }
 try {
   const source='const clamp='+clamp.toString()+';const compute='+compute.toString()+
     ';self.onmessage=e=>{const pixels=compute(e.data);self.postMessage({p:e.data,pixels:pixels.buffer},[pixels.buffer])}';
   const url=URL.createObjectURL(new Blob([source],{type:'text/javascript'}));
-  worker=new Worker(url);URL.revokeObjectURL(url);
+  worker=new Worker(url);edgeWorker=new Worker(url);
+  if(cacheFrames)cacheWorker=new Worker(url);
+  URL.revokeObjectURL(url);
   worker.onmessage=e=>finish(e.data.p,new Uint8ClampedArray(e.data.pixels));
   worker.onerror=()=>{worker.terminate();worker=null;busy=false;draw(position)};
+  edgeWorker.onmessage=e=>{
+    const p=e.data.p;edgeBusy=false;
+    if(p.edgeEpoch!==edgeEpoch)return;
+    edgeFillCanvas.width=p.width;edgeFillCanvas.height=p.width;
+    const image=edgeFillContext.createImageData(p.width,p.width);
+    image.data.set(new Uint8ClampedArray(e.data.pixels));
+    edgeFillContext.putImageData(image,0,0);
+    edgeRendered=p;draw(position);
+  };
+  edgeWorker.onerror=()=>{edgeWorker.terminate();edgeWorker=null;edgeBusy=false};
+  if(cacheWorker){
+    cacheWorker.onmessage=e=>{
+      const p=e.data.p;
+      cached.set(p.cacheIndex,{p,pixels:new Uint8ClampedArray(e.data.pixels)});
+      cacheDone++;
+      scheduleCache();
+    };
+    cacheWorker.onerror=()=>{cacheWorker.terminate();cacheWorker=null};
+  }
 }catch(_){worker=null}
+function scheduleCache(){
+  if(!cacheWorker||cacheNext>=cacheTimes.length)return;
+  const index=cacheTimes[cacheNext++];
+  const t=index*recipe.duration/nominalDuration;
+  const p=cameraAt(t);
+  cacheWorker.postMessage({...p,span:p.span*1.18,width:Math.round(p.width*1.18),
+    nominalSpan:p.span,nominalWidth:p.width,cacheIndex:index,palette});
+}
+function startCache(){
+  if(!cacheFrames||cacheStarted)return;
+  cacheStarted=true;scheduleCache();
+}
 function request(p) {
-  busy=true;sent=p;lastRequest=performance.now();
-  const job={...p,palette};
+  busy=true;lastRequest=performance.now();
+  // The extra border gives a finished image room to move with the camera.
+  // Increase pixel dimensions too, preserving the original pixel scale.
+  const view=motionFrames?{...p,nominalSpan:p.span,nominalWidth:p.width,
+    span:p.span*1.18,width:Math.round(p.width*1.18)}:p;
+  const job={...view,palette};
   if(worker)worker.postMessage(job);
-  else setTimeout(()=>finish(p,compute(job)),0);
+  else setTimeout(()=>finish(view,compute(job)),0);
+}
+function requestEdge(p){
+  if(!edgeWorker||edgeBusy||!rendered)return;
+  edgeBusy=true;lastEdgeRequest=performance.now();
+  edgeRequested={...p,edgeOutside:rendered,edgeEpoch};
+  edgeWorker.postMessage({...edgeRequested,palette});
+}
+function projection(source,p) {
+  // Place the old image in world coordinates. A smaller source must never be
+  // stretched across the viewport when zooming out.
+  const size=800*source.span/p.span;
+  return {size,x:400+(source.cx-p.cx)*800/p.span-size/2,
+    y:400-(source.cy-p.cy)*800/p.span-size/2};
+}
+function covers(source,p){
+  const r=projection(source,p);
+  return r.x<=.5&&r.y<=.5&&r.x+r.size>=799.5&&r.y+r.size>=799.5;
+}
+function motionView(source,p){
+  const span=Math.min(p.span,source.span);
+  const margin=(source.span-span)/2;
+  return {...p,span,cx:clamp(p.cx,source.cx-margin,source.cx+margin),
+    cy:clamp(p.cy,source.cy-margin,source.cy+margin)};
+}
+function uploadCached(entry,index,canvas,context,loaded){
+  if(loaded===index)return index;
+  canvas.width=entry.p.width;canvas.height=entry.p.width;
+  const image=context.createImageData(entry.p.width,entry.p.width);
+  image.data.set(entry.pixels);context.putImageData(image,0,0);
+  return index;
+}
+function drawCached(p,t){
+  const nominal=t*nominalDuration/recipe.duration;
+  if(nominal<cacheFirst||nominal>cacheLast)return false;
+  const fine=nominal>=125&&nominal<136;
+  const index=fine?Math.floor(nominal*2)/2:Math.floor(nominal);
+  const step=fine?.5:1,fraction=(nominal-index)/step;
+  const a=cached.get(index),b=cached.get(index+step);
+  const aReady=a&&covers(a.p,p),bReady=b&&covers(b.p,p);
+  if(!aReady&&!bReady)return false;
+  ctx.imageSmoothingEnabled=true;
+  if(aReady){
+    cacheCanvasIndexA=uploadCached(a,index,cacheCanvasA,cacheContextA,cacheCanvasIndexA);
+    const r=projection(a.p,p);ctx.drawImage(cacheCanvasA,r.x,r.y,r.size,r.size);
+  }
+  if(bReady){
+    cacheCanvasIndexB=uploadCached(b,index+step,cacheCanvasB,cacheContextB,cacheCanvasIndexB);
+    const r=projection(b.p,p);
+    ctx.globalAlpha=aReady?fraction*fraction*(3-2*fraction):1;
+    ctx.drawImage(cacheCanvasB,r.x,r.y,r.size,r.size);ctx.globalAlpha=1;
+  }
+  previous=null;previousView=null;
+  return true;
+}
+function clearEdge(){edgeEpoch++;edgeRendered=null;edgeRequested=null;lastEdgeRequest=-Infinity}
+function drawProjected(canvas,source,p,opacity) {
+  const rect=projection(source,p);
+  if(opacity<=0||rect.size<1||rect.x>=800||rect.y>=800||
+     rect.x+rect.size<=0||rect.y+rect.size<=0)return;
+  const left=rect.x>0,right=rect.x+rect.size<800;
+  const top=rect.y>0,bottom=rect.y+rect.size<800;
+  ctx.imageSmoothingEnabled=true;
+  if(!left&&!right&&!top&&!bottom){
+    ctx.globalAlpha=opacity;
+    ctx.drawImage(canvas,rect.x,rect.y,rect.size,rect.size);
+    ctx.globalAlpha=1;return;
+  }
+  // Soften only the join against newly calculated edge pixels.
+  edgeContext.clearRect(0,0,800,800);edgeContext.imageSmoothingEnabled=true;
+  edgeContext.drawImage(canvas,rect.x,rect.y,rect.size,rect.size);
+  edgeContext.globalCompositeOperation='destination-out';
+  const fade=(start,end,x,y,w,h)=>{
+    const gradient=x!==null?edgeContext.createLinearGradient(start,0,end,0)
+      :edgeContext.createLinearGradient(0,start,0,end);
+    gradient.addColorStop(0,'rgba(0,0,0,1)');
+    gradient.addColorStop(1,'rgba(0,0,0,0)');
+    edgeContext.fillStyle=gradient;edgeContext.fillRect(x??0,y??0,w,h);
+  };
+  if(left){
+    const w=Math.min(28,Math.max(2,rect.x*2),rect.size/3);
+    fade(rect.x,rect.x+w,rect.x,0,w,800);
+  }
+  if(right){
+    const w=Math.min(28,Math.max(2,(800-rect.x-rect.size)*2),rect.size/3);
+    fade(rect.x+rect.size,rect.x+rect.size-w,rect.x+rect.size-w,0,w,800);
+  }
+  if(top){
+    const w=Math.min(28,Math.max(2,rect.y*2),rect.size/3);
+    fade(rect.y,rect.y+w,null,rect.y,800,w);
+  }
+  if(bottom){
+    const w=Math.min(28,Math.max(2,(800-rect.y-rect.size)*2),rect.size/3);
+    fade(rect.y+rect.size,rect.y+rect.size-w,null,rect.y+rect.size-w,800,w);
+  }
+  edgeContext.globalCompositeOperation='source-over';
+  ctx.globalAlpha=opacity;ctx.drawImage(edgeCanvas,0,0);ctx.globalAlpha=1;
 }
 function draw(t) {
-  const p=cameraAt(t);ctx.fillStyle='#101018';ctx.fillRect(0,0,800,800);
-  if(rendered){
-    const n=renderCanvas.width,sourceSize=n*p.span/rendered.span;
-    const sx=n/2+(p.cx-rendered.cx)*n/rendered.span-sourceSize/2;
-    const sy=n/2-(p.cy-rendered.cy)*n/rendered.span-sourceSize/2;
-    ctx.imageSmoothingEnabled=true;
-    if(sourceSize<1||sourceSize>n*2||sx>n||sy>n||sx+sourceSize<0||sy+sourceSize<0)
-      ctx.drawImage(renderCanvas,0,0,n,n,0,0,800,800);
-    else ctx.drawImage(renderCanvas,sx,sy,sourceSize,sourceSize,0,0,800,800);
+  const p=cameraAt(t);
+  const cacheDrawn=cacheFrames&&drawCached(p,t);
+  if(cacheDrawn){
+    // A fully calculated pair covers the moving viewport.
+  }else if(completeFrames){
+    if(rendered&&(motionFrames||displayedComplete!==rendered||shortBlend&&previous)){
+      ctx.imageSmoothingEnabled=true;
+      if(motionFrames){
+        // Move both complete images through the same intermediate camera.
+        // Each image is constrained to its own calculated border.
+        const fraction=previous?clamp((performance.now()-blendAt)/motionBlendMs,0,1):1;
+        const ease=fraction*fraction*(3-2*fraction);
+        const travel=previousView&&fraction<1?{
+          ...p,cx:previousView.cx+(p.cx-previousView.cx)*ease,
+          cy:previousView.cy+(p.cy-previousView.cy)*ease,
+          span:previousView.span*Math.pow(p.span/previousView.span,ease)
+        }:p;
+        const view=motionView(rendered,travel);
+        const rect=projection(rendered,view);
+        ctx.drawImage(renderCanvas,rect.x,rect.y,rect.size,rect.size);
+        if(previous&&fraction<1){
+          const oldView=motionView(previous,travel);
+          const old=projection(previous,oldView);
+          ctx.globalAlpha=1-ease;
+          ctx.drawImage(previousCanvas,old.x,old.y,old.size,old.size);
+          ctx.globalAlpha=1;
+        }else {previous=null;previousView=null}
+      }else ctx.drawImage(renderCanvas,0,0,800,800);
+      if(shortBlend&&previous){
+        const fade=clamp((performance.now()-blendAt)/120,0,1);
+        if(fade<1){
+          ctx.globalAlpha=1-fade;
+          ctx.drawImage(previousCanvas,0,0,800,800);
+          ctx.globalAlpha=1;
+        }else previous=null;
+      }
+      displayedComplete=rendered;
+    }
+  }else if(rendered){
+    const fullCoverage=covers(rendered,p);
+    const edgeCoverage=t>=recipe.duration/2&&edgeRendered&&
+      covers(edgeRendered,p)&&covers(rendered,edgeRendered.edgeOutside);
+    // Use projected pixels where they cover the view; otherwise keep each
+    // completed full frame visible while the renderer catches the moving camera.
+    ctx.fillStyle='#101018';ctx.fillRect(0,0,800,800);
+    const mix=previous?clamp((performance.now()-blendAt)/300,0,1):1;
+    if(fullCoverage||edgeCoverage){
+      if(edgeCoverage)drawProjected(edgeFillCanvas,edgeRendered,p,1);
+      drawProjected(renderCanvas,rendered,p,1);
+      if(mix<1)drawProjected(previousCanvas,previous,p,1-mix);
+    }else{
+      // The spiral can outrun a calculated frame. Show each completed frame
+      // at its own camera position until a new projection covers the view.
+      ctx.drawImage(renderCanvas,0,0,800,800);
+      if(mix<1){
+        ctx.globalAlpha=1-mix;
+        ctx.drawImage(previousCanvas,0,0,800,800);
+        ctx.globalAlpha=1;
+      }
+    }
+    if(mix>=1)previous=null;
   }
-  const change=!rendered||Math.abs(Math.log(p.span/rendered.span))>(playing?.055:1e-5)||
+  if(!completeFrames&&playing&&t>=recipe.duration/2&&rendered&&edgeWorker){
+    const future=cameraAt(Math.min(recipe.duration,t+1.1));
+    const needsEdges=future.span>rendered.span*1.06;
+    const needsRefresh=!edgeRequested||future.span>edgeRequested.span*1.12;
+    if(needsEdges&&needsRefresh&&!edgeBusy&&performance.now()-lastEdgeRequest>350)
+      requestEdge(future);
+  }
+  const change=!rendered||Math.abs(Math.log(p.span/(rendered.nominalSpan??rendered.span)))>(playing?.055:1e-5)||
     Math.hypot(p.cx-rendered.cx,p.cy-rendered.cy)>p.span*.03||
-    Math.abs(p.iterations-rendered.iterations)>15||p.width!==rendered.width;
-  if(change&&!busy&&performance.now()-lastRequest>90)request(p);
+    Math.abs(p.iterations-rendered.iterations)>15||p.width!==(rendered.nominalWidth??rendered.width);
+  // Warm the live renderer just before the cached interval ends.
+  const nearCacheEnd=cacheFrames&&t*nominalDuration/recipe.duration>cacheLast-3;
+  if(change&&(!cacheDrawn||nearCacheEnd)&&!busy&&performance.now()-lastRequest>90)request(p);
+  if(!scrubbing)timeline.value=t;
+  timeLabel.textContent=formatTime(t)+' / '+formatTime(recipe.duration);
 }
+function formatTime(t){const n=Math.floor(clamp(t,0,recipe.duration));return Math.floor(n/60)+':'+String(n%60).padStart(2,'0')}
+timeline.addEventListener('input',()=>{
+  scrubbing=true;
+  position=clamp(Number(timeline.value),0,recipe.duration);
+  draw(position);
+});
+timeline.addEventListener('change',()=>{
+  const target=clamp(Number(timeline.value),0,recipe.duration);
+  if(playing||starting){starting=false;resumeRequested=false;stopProbe();setPlaying(false);widget?.pause()}
+  position=target;anchor=target;anchorTime=performance.now();ended=false;
+  clearEdge();widget?.seekTo(target*1000);draw(position);scrubbing=false;
+});
 function clock(){return clamp(anchor+(performance.now()-anchorTime)/1000,0,recipe.duration)}
 function setPlaying(value){playing=value;playButton.textContent=value?'❚❚ Pause':'▶ Play';playButton.disabled=false}
 function stopProbe(){if(probeTimer)clearInterval(probeTimer);probeTimer=null;lastProbe=null}
@@ -163,7 +425,7 @@ function observe(ms){
 }
 function requestStart(){
   if(!widgetReady||starting)return;
-  if(ended){widget.seekTo(0);position=0;ended=false}
+  if(ended){widget.seekTo(0);position=0;ended=false;clearEdge()}
   starting=true;resumeRequested=true;status.textContent='';probeStarted=performance.now();
   playButton.textContent='Starting…';
   let retries=0;
@@ -186,26 +448,9 @@ playButton.addEventListener('click',()=>{
   if(playing){resumeRequested=false;position=clock();setPlaying(false);draw(position);widget.pause();return}
   requestStart();
 });
-if(new URLSearchParams(location.search).has('testAudio'))testPanel.hidden=false;
-loadTrack.addEventListener('click',()=>{
-  const raw=embedCode.value.trim();
-  const src=raw.match(/<iframe\b[^>]*\bsrc=["']([^"']+)["']/i)?.[1]?.replaceAll('&amp;','&');
-  let target;
-  try{
-    const player=new URL(src);
-    if(player.protocol!=='https:'||player.hostname!=='w.soundcloud.com'||player.pathname!=='/player/')throw Error('player');
-    target=new URL(player.searchParams.get('url'));
-    if(target.protocol!=='https:'||target.hostname!=='api.soundcloud.com'||!/^\/tracks\//.test(target.pathname))throw Error('track');
-  }catch(_){status.textContent='Paste the full iframe code from SoundCloud Share → Embed.';return}
-  if(!widget){status.textContent='SoundCloud player is still loading.';return}
-  starting=false;resumeRequested=false;stopProbe();playing=false;widgetReady=false;ended=false;position=0;anchor=0;
-  playButton.disabled=true;playButton.textContent='Loading track…';status.textContent='';
-  embedCode.value='';
-  widget.load(target.href,{auto_play:false,visual:false,show_comments:false,show_reposts:false,callback:audioReady});
-});
 function audioReady(){
   widgetReady=true;resumeRequested=false;setPlaying(false);status.textContent='';
-  widget.getDuration(ms=>{if(Number.isFinite(ms)&&ms>0){recipe.duration=ms/1000;recipe.segments.forEach((s,i)=>s.time=baseTimes[i]*recipe.duration/nominalDuration);draw(position)}});
+  widget.getDuration(ms=>{if(Number.isFinite(ms)&&ms>0){recipe.duration=ms/1000;recipe.segments.forEach((s,i)=>s.time=baseTimes[i]*recipe.duration/nominalDuration);timeline.max=recipe.duration;draw(position)}startCache()});
 }
 function initAudio(){
   if(!window.SC?.Widget){playButton.textContent='Track unavailable';status.textContent='SoundCloud could not load.';return}
@@ -221,7 +466,9 @@ function initAudio(){
   widget.bind(SC.Widget.Events.ERROR,()=>{starting=false;resumeRequested=false;stopProbe();widgetReady=false;playButton.textContent='Track unavailable';playButton.disabled=true;status.textContent='SoundCloud could not play this track.'});
 }
 function frame(now){
-  if(playing){
+  if(!playing&&previous)
+    draw(position);
+  if(playing&&!scrubbing){
     if(widgetReady&&now-lastPoll>200){
       lastPoll=now;widget.getPosition(ms=>{
         if(!playing||!Number.isFinite(ms))return;
@@ -232,7 +479,8 @@ function frame(now){
   }
   requestAnimationFrame(frame);
 }
-draw(0);initAudio();requestAnimationFrame(frame);
+draw(0);
+initAudio();requestAnimationFrame(frame);
 </script>
 </body>
 </html>
