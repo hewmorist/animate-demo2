@@ -11,7 +11,7 @@ playback, or 10 seconds when started immediately, with mild initial
 choppiness. Numerical differences from the original remain a known limit.
 
 Only browser runtime assets are included, plus deployment configuration
-and ai-context. No Rust source, Wasm, CPU calculator, benchmark or offline
+only. No Rust source, Wasm, CPU calculator, benchmark or offline
 generator. JavaScript and GLSL are required browser runtime assets.
 
 Hosting: serve the repository root for GitHub Pages, or run
