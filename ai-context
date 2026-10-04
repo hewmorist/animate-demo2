@@ -1,0 +1,53 @@
+AI CONTEXT — Planet Mandelbrot HD release
+Updated: 2026-10-04 (America/Los_Angeles)
+
+Repository: hewmorist/animate-demo2. Branch: hi-def-planet.
+User explicitly authorized this new release branch. Do not change player2
+or other existing live branches. Source: hewmorist/showcase/planet-gpu-calc
+r8, accepted by user as shippable. Full experiment/toolchain history remains
+in that development branch's ai-context and README.
+
+Release 1: fixed GPU, high definition (1.5x width, 2.25x pixels).
+No comparison or quality switches. URL parameters cannot enable CPU or
+alter quality/frame mode/path. Play/pause, seeking, progress and timing stay.
+Calculated widths480-576; 18% guard borders retain pixel density.
+105 in-memory prepared frames. No CPU calculator/fallback or benchmark.
+
+Runtime toolchain: HTML/CSS/JavaScript, SoundCloud iframe/player API,
+one Web Worker with prioritized job queue, OffscreenCanvas WebGL2,
+GLSL ES3 vertex/fragment shaders, readPixels RGBA ArrayBuffer transfer,
+Canvas2D ImageData display and prepared-frame blending.
+Four runtime files: index.html, calc-bridge.js, calc-worker.js, gpu.js.
+JavaScript/GLSL are necessary browser runtime assets. No Rust source,
+Wasm, offline generator, Cargo files or development tests shipped.
+Original source history remains in git ancestry; release tree is minimal.
+
+GPU algorithm unchanged from accepted r8: direct compensated iteration
+for shallow zoom; high/low-float perturbation for span below .001.
+Embedded3001-entry RGBA32F high/low reference orbit generated OFFLINE
+using Python Decimal90 digits. No runtime CPU reference iteration.
+Highp samplers, bit-mask float splitting, compensated add/multiply,
+reference rebasing on cancellation and shader edge masks resolved earlier
+precision issues. Numerical differences remain; exact equivalence unproven.
+Do not restore CPU sample repairs or hidden automatic fallback.
+
+Build: Node.js node stage.cjs copies four assets into public/.
+Pages: branch hi-def-planet; build node stage.cjs; output public.
+GitHub Pages can serve root directly.
+Workers: npx wrangler deploy; assets public; configured name animate-demo2.
+Check intended Cloudflare project/name before changing existing hosting.
+Browser compiles GLSL; no Rust/Wasm rebuild required.
+
+User iPhone evidence: Balanced GPU3s / CPU54s; HD GPU7s / CPU124s.
+Immediate HD playback prep10s, mild early choppiness, user accepts.
+Times include queue/calculation/transfer; not pure GPU benchmark or FPS.
+
+Checks: JS syntax; mocked release ignores legacy mode/quality parameters,
+HD widths576/480, 105-frame completion/timing and visible errors.
+Release shader copied unchanged. Runtime dependencies restricted to four
+assets plus external SoundCloud. Branch prepared for hosting switch;
+live Cloudflare release deployment not independently verified.
+
+Standing policy: read/update root ai-context on actual working branch.
+Prose max80 columns, short paragraphs, separate observations from checks.
+No credentials. Preserve showcase experiment and existing live branches.

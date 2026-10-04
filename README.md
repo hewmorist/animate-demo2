@@ -1,9 +1,21 @@
-# Planet Mandelbrot — player2
+# Planet Mandelbrot — High definition
 
-This branch runs the tested ahead-of-time browser frame cache by default, with the SoundCloud player, Play/Pause button, and timeline scrubber. The animation recipe is embedded in `index.html` and also available as `mandelbrot-demo.json`. The visible revision is `player2 r1`.
+Release 1, based on showcase/planet-gpu-calc r8.
+Fixed GPU calculation and High definition graphics. Play/pause, timeline
+and frame-preparation progress remain; comparison switches are removed.
+URL options cannot enable CPU calculation or change graphics quality.
 
-A background worker calculates 105 detailed RGBA frames for the turn and most of the ascent (about 1:58–3:30). They occupy roughly 61 MiB in browser memory and are discarded on reload; they are not downloaded as image or video files. Playback uses the live renderer until the cached frames are ready and outside the cached interval.
+Requires a browser supporting WebGL2 in an OffscreenCanvas worker.
+Audio uses SoundCloud. User iPhone preparation: about 7 seconds before
+playback, or 10 seconds when started immediately, with mild initial
+choppiness. Numerical differences from the original remain a known limit.
 
-The public track is [Planet Mandelbrot](https://soundcloud.com/hewmorist/mandelbrot-techno). The nominal 4:21 recipe timeline is scaled to the duration reported by SoundCloud.
+Only browser runtime assets are included, plus deployment configuration
+and ai-context. No Rust source, Wasm, CPU calculator, benchmark or offline
+generator. JavaScript and GLSL are required browser runtime assets.
 
-Pages can be set to deploy this `player2` branch from `/ (root)`. The revision on the page distinguishes it from previous deployments.
+Hosting: serve the repository root for GitHub Pages, or run
+`node stage.cjs` and serve `public/` for Cloudflare Pages.
+Cloudflare branch: hi-def-planet. Build: node stage.cjs.
+For Workers: deploy with `npx wrangler deploy`; Worker name animate-demo2
+in wrangler.toml. Select the intended Worker project/name when configuring.

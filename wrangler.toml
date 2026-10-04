@@ -1,0 +1,6 @@
+name = "animate-demo2"
+compatibility_date = "2026-10-04"
+[assets]
+directory = "./public"
+[build]
+command = "node stage.cjs"
